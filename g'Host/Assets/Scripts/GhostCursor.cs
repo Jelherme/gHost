@@ -23,7 +23,7 @@ public class GhostCursor : MonoBehaviour
         if (!collision)
         {
             mousePos = Input.mousePosition;
-            mousePos.z = Camera.main.transform.position.z; //garantir que o mousePos.z = camPos.z para em baixo converter tudo em world coords. como e 2d, o z vai ser subtraido no ScreenToWorldPoint 
+            mousePos.z -= Camera.main.transform.position.z; //o z vai ser subtraido no ScreenToWorldPoint 
 
             worldPos = Camera.main.ScreenToWorldPoint(mousePos); //converte a mousePos em coords do world
             cursor.transform.position = worldPos;
@@ -34,17 +34,14 @@ public class GhostCursor : MonoBehaviour
     void OnCollisionEnter(Collision wall)
     {
         collision = true;        
-    }
-
-    private void OnCollisionExit(Collision wall)
-    {
-        collision = false;
         StartCoroutine(ReturnToPos());
     }
 
     IEnumerator ReturnToPos()
     {
         yield return new WaitForSeconds(releaseTime);
+
+        collision = false;
 
         Vector3 direction = (cursor.transform.position - ghost.transform.position);
         ghost.transform.position = direction.normalized * Time.deltaTime;
